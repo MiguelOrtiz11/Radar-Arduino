@@ -9,8 +9,6 @@
 #define BLUETOOTH_RX 3 //bluetooth RX
 #define BLUETOOTH_TX 2 //bluetooth TX
 
-
-
 NewPing sonar(TRIG_PIN, ECHO_PIN, MAX_DISTANCE);
 Servo servo;
 SoftwareSerial bluetooth(BLUETOOTH_RX, BLUETOOTH_TX);
