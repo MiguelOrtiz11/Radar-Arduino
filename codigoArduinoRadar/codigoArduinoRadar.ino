@@ -1,31 +1,36 @@
-//Inclusión de librerias
+// Librerías
 #include <NewPing.h>
 #include <Servo.h>
-#include <SoftwareSerial.h> //Definir los pines de los sensores
-#define TRIG_PIN A3 //sensor de proximidad
-#define ECHO_PIN A2 //sensor de proximidad
-#define MAX_DISTANCE 200 //distancia máxima del sensor en cm
-#define SERVO_PIN 9 // servomotor
-#define BLUETOOTH_RX 3 //bluetooth RX
-#define BLUETOOTH_TX 2 //bluetooth TX
+#include <SoftwareSerial.h>
 
+// Configuración de pines
+#define TRIG_PIN A3
+#define ECHO_PIN A2
+#define MAX_DISTANCE 200
+#define SERVO_PIN 9
+#define BLUETOOTH_RX 3
+#define BLUETOOTH_TX 2
+
+// Instancias de componentes
 NewPing sonar(TRIG_PIN, ECHO_PIN, MAX_DISTANCE);
 Servo servo;
 SoftwareSerial bluetooth(BLUETOOTH_RX, BLUETOOTH_TX);
-bool radarActivo = false; // Estado del radar
+
+bool radarActivo = false;
 
 void setup() {
     Serial.begin(9600);
     bluetooth.begin(9600);
-    servo.attach(SERVO_PIN); // Conecta el servo al pin correspondiente
+    servo.attach(SERVO_PIN);
+    servo.write(0); // Posición inicial del servo
 }
 
 void loop() {
     if (bluetooth.available()) {
         char comando = bluetooth.read();
-        if (comando == 'H') {
+        if (comando == 'H') {         // Comando para iniciar radar
             iniciarRadar();
-        } else if (comando == 'Q') {
+        } else if (comando == 'Q') {  // Comando para detener radar
             detenerRadar();
         }
     }
@@ -36,30 +41,22 @@ void loop() {
 
 void iniciarRadar() {
     radarActivo = true;
-    Serial.println("Radar iniciado"); // bluetooth.println("Radar iniciado");
+    bluetooth.println("Radar iniciado");
 }
 
-void detenerRadar() {  // Corrección de paréntesis
+void detenerRadar() {
     radarActivo = false;
-    Serial.println("Radar detenido"); // bluetooth.println("Radar detenido");
+    bluetooth.println("Radar detenido");
 }
 
-void escanearEntorno() {  // Corrección de paréntesis
+void escanearEntorno() {
     for (int angulo = 0; angulo <= 180; angulo += 10) {
-        servo.write(angulo); // Mover el servo al ángulo especificado
-        delay(500); // Tiempo de espera para el movimiento del servo
-        int distancia = sonar.ping_cm(); // Medir distancia actual
-        
-        // Enviar datos por Bluetooth
+        servo.write(angulo);
+        delay(500);
+        int distancia = sonar.ping_cm();
+        // Enviar datos en formato CSV: "ángulo,distancia"
         bluetooth.print(angulo);
         bluetooth.print(",");
         bluetooth.println(distancia);
-        
-        // Mostrar datos en el monitor serial
-        Serial.print("Ángulo: ");
-        Serial.print(angulo);
-        Serial.print(" grados, Distancia: ");
-        Serial.print(distancia);
-        Serial.println(" cm");
     }
 }
