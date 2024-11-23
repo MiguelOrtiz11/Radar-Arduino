@@ -1,4 +1,3 @@
-// Librerías
 #include <NewPing.h>
 #include <Servo.h>
 #include <SoftwareSerial.h>
@@ -54,9 +53,14 @@ void escanearEntorno() {
         servo.write(angulo);
         delay(500);
         int distancia = sonar.ping_cm();
-        // Enviar datos en formato CSV: "ángulo,distancia"
-        bluetooth.print(angulo);
-        bluetooth.print(",");
-        bluetooth.println(distancia);
+
+        // Depuración para confirmar envío
+        Serial.print("Ángulo: ");
+        Serial.print(angulo);
+        Serial.print(", Distancia: ");
+        Serial.println(distancia);
+
+        // Enviar datos por Bluetooth de manera limpia
+        bluetooth.println(String(angulo) + "," + String(distancia));
     }
 }
