@@ -10,6 +10,7 @@
 #define BLUETOOTH_RX 3
 #define BLUETOOTH_TX 2
 
+
 // Instancias de componentes
 NewPing sonar(TRIG_PIN, ECHO_PIN, MAX_DISTANCE);
 Servo servo;
@@ -18,49 +19,55 @@ SoftwareSerial bluetooth(BLUETOOTH_RX, BLUETOOTH_TX);
 bool radarActivo = false;
 
 void setup() {
-    Serial.begin(9600);
-    bluetooth.begin(9600);
-    servo.attach(SERVO_PIN);
-    servo.write(0); // Posición inicial del servo
+  Serial.begin(9600);
+  bluetooth.begin(9600);
+  servo.attach(SERVO_PIN);
+  servo.write(0);  // Posición inicial del servo
+  pinMode(11, OUTPUT);
 }
 
 void loop() {
-    if (bluetooth.available()) {
-        char comando = bluetooth.read();
-        if (comando == 'H') {         // Comando para iniciar radar
-            iniciarRadar();
-        } else if (comando == 'Q') {  // Comando para detener radar
-            detenerRadar();
-        }
+  if (bluetooth.available()) {
+    char comando = bluetooth.read();
+    if (comando == 'H') {  // Comando para iniciar radar
+      iniciarRadar();
+    } else if (comando == 'Q') {  // Comando para detener radar
+      detenerRadar();
     }
-    if (radarActivo) {
-        escanearEntorno();
-    }
+  }
+  if (radarActivo) {
+    escanearEntorno();
+  }
 }
 
 void iniciarRadar() {
-    radarActivo = true;
-    bluetooth.println("Radar iniciado");
+  radarActivo = true;
+  digitalWrite(11, HIGH);  // Encender el LED al iniciar el radar
+  bluetooth.println("Radar iniciado");
 }
 
 void detenerRadar() {
-    radarActivo = false;
-    bluetooth.println("Radar detenido");
+  radarActivo = false;
+  digitalWrite(11, LOW);  // Apagar el LED al detener el radar
+
+  bluetooth.println("Radar detenido");
 }
 
 void escanearEntorno() {
-    for (int angulo = 0; angulo <= 180; angulo += 10) {
-        servo.write(angulo);
-        delay(500);
-        int distancia = sonar.ping_cm();
 
-        // Depuración para confirmar envío
-        Serial.print("Ángulo: ");
-        Serial.print(angulo);
-        Serial.print(", Distancia: ");
-        Serial.println(distancia);
+  for (int angulo = 0; angulo <= 180; angulo += 10) {
 
-        // Enviar datos por Bluetooth de manera limpia
-        bluetooth.println(String(angulo) + "," + String(distancia));
-    }
+    servo.write(angulo);
+    delay(500);
+    int distancia = sonar.ping_cm();
+
+    // Depuración para confirmar envío
+    Serial.print("Ángulo: ");
+    Serial.print(angulo);
+    Serial.print(", Distancia: ");
+    Serial.println(distancia);
+
+    // Enviar datos por Bluetooth de manera limpia
+    bluetooth.println(String(angulo) + "," + String(distancia));
+  }
 }
