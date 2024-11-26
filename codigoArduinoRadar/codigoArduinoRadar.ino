@@ -55,6 +55,7 @@ void detenerRadar() {
 
 void escanearEntorno() {
 
+  // Haga recorrido de 180 grados cada 10 grados
   for (int angulo = 0; angulo <= 180; angulo += 10) {
 
     servo.write(angulo);
