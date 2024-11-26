@@ -29,9 +29,9 @@ void setup() {
 void loop() {
   if (bluetooth.available()) {
     char comando = bluetooth.read();
-    if (comando == 'H') {  // Comando para iniciar radar
+    if (comando == 'H') {  // Iniciar radar
       iniciarRadar();
-    } else if (comando == 'Q') {  // Comando para detener radar
+    } else if (comando == 'Q') {  // Detener radar
       detenerRadar();
     }
   }
@@ -67,7 +67,7 @@ void escanearEntorno() {
     Serial.print(", Distancia: ");
     Serial.println(distancia);
 
-    // Enviar datos por Bluetooth de manera limpia
+    // Enviar datos por Bluetooth 
     bluetooth.println(String(angulo) + "," + String(distancia));
   }
 }
