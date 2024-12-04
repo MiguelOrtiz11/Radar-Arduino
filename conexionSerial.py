@@ -13,7 +13,7 @@ app = Flask(__name__)
 ventana = deque(maxlen=10)
 
 # Función para recibir un recorrido completo con tiempo
-def recibir_recorrido():
+def recibir_recorrido_completo_con_tiempo():
     arduino.reset_input_buffer()
     datos_recorrido = []
     tiempo_inicial = time.time()  # Marcar el inicio del recorrido
@@ -39,7 +39,7 @@ def recibir_recorrido():
 
 @app.route('/analisis', methods=['GET'])
 def enviar_analisis():
-    datos_recorrido = recibir_recorrido()
+    datos_recorrido = recibir_recorrido_completo_con_tiempo()
 
     # Calcular promedios
     promedio_distancia = sum([dato["distancia"] for dato in datos_recorrido]) / len(datos_recorrido)
